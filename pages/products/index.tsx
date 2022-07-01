@@ -1,13 +1,28 @@
+import { GetServerSidePropsContext, GetStaticProps } from 'next'
 import React from 'react'
 
-type Props = {}
+type Props = {
+    products: any[]
+}
 
-const Product = (props: Props) => {
+const Product = ({ products }: Props) => {
     return (
         <div>
-            <h1>Product Page</h1>
+            {products && products.map(item => <div key={item.id}>{item.name}</div>)}
         </div>
     )
 }
 
+export const getStaticProps: GetStaticProps<Props> = async (context: GetServerSidePropsContext) => {
+    const data = await (await fetch('http://localhost:3001/products')).json();
+    if(data)
+        return {
+        props: {
+            products: data
+        }
+    }
+    return {
+        notFound : true
+    }
+}
 export default Product
