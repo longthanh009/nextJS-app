@@ -1,28 +1,26 @@
 import { GetServerSidePropsContext, GetStaticProps } from 'next'
 import React from 'react'
+import LayoutPageWeb from '../../components/Layout'
+import { useProduct } from '../../hooks/product'
 
 type Props = {
     products: any[]
 }
 
-const Product = ({ products }: Props) => {
+const Product = () => {
+    const { data: products, error,createdPro,remove } = useProduct();
+    if (!products) return <div>Loading...</div>
+    if (error) return <div>Fail to load</div>
     return (
         <div>
-            {products && products.map(item => <div key={item.id}>{item.name}</div>)}
+            <button onClick={()=> createdPro({name: "Product C"})}>Add</button>
+            <div>
+                {products && products.map((item:any) => <div key={item.id}>{item.name}
+                <button onClick={() => remove(item.id)}>Remove</button>
+                </div>)}
+            </div>
         </div>
     )
 }
-
-export const getStaticProps: GetStaticProps<Props> = async (context: GetServerSidePropsContext) => {
-    const data = await (await fetch('http://localhost:3001/products')).json();
-    if(data)
-        return {
-        props: {
-            products: data
-        }
-    }
-    return {
-        notFound : true
-    }
-}
+Product.Layout = LayoutPageWeb
 export default Product
